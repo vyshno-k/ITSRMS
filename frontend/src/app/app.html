@@ -1,0 +1,35 @@
+@if (isAuthPage()) {
+  <router-outlet></router-outlet>
+} @else {
+  <div class="app-shell">
+    <div class="mobile-menu-backdrop" [class.visible]="mobileMenuOpen()" (click)="closeMobileMenu()" aria-hidden="true"></div>
+    <aside class="side-nav" [class.mobile-open]="mobileMenuOpen()">
+      <a class="brand" [routerLink]="isAdmin ? '/admin' : '/service-catalog'">
+        <span class="brand-mark">IT</span>
+        <span class="brand-copy"><strong>Deskflow</strong><small>IT service operations</small></span>
+      </a>
+      <p class="nav-label">{{ isAdmin ? 'Admin Dashboard' : 'Workspace' }}</p>
+      <nav id="main-navigation" class="module-links" aria-label="Main navigation">
+        @if (isAdmin) {
+          <a routerLink="/admin" routerLinkActive="active"><span class="nav-icon">◈</span>Dashboard</a>
+          <a routerLink="/employees" routerLinkActive="active"><span class="nav-icon">◎</span>Employee Management</a>
+        }
+        <a routerLink="/service-catalog" routerLinkActive="active"><span class="nav-icon">▦</span>Service catalog</a>
+        <a routerLink="/service-requests" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><span class="nav-icon">⌁</span>Service requests</a>
+        @if (!isAdmin) {
+          <a routerLink="/resolution-closure" routerLinkActive="active"><span class="nav-icon">✓</span>Resolution &amp; closure</a>
+        } @else {
+          <a routerLink="/sla" routerLinkActive="active"><span class="nav-icon">◷</span>SLA management</a>
+          <a routerLink="/assignment" routerLinkActive="active"><span class="nav-icon">⇄</span>Assignments</a>
+          <a routerLink="/resolution-closure" routerLinkActive="active"><span class="nav-icon">✓</span>Resolution &amp; closure</a>
+        }
+      </nav>
+      <div class="nav-footer"><span class="status-dot"></span><span><strong>Service desk online</strong><small>All systems operational</small></span></div>
+    </aside>
+    <button class="menu-toggle" type="button" [attr.aria-expanded]="mobileMenuOpen()" aria-controls="main-navigation" aria-label="Toggle navigation menu" (click)="toggleMobileMenu()"><span></span><span></span><span></span></button>
+    <main class="workspace">
+      <header class="workspace-topbar"><span class="breadcrumb">IT OPERATIONS / <strong>{{ isAdmin ? 'ADMIN CONSOLE' : 'WORKSPACE' }}</strong></span><div class="current-user"><span class="user-avatar">{{ (auth.getUser()?.fullName || auth.getUser()?.username || 'U').charAt(0).toUpperCase() }}</span><span><strong>{{ auth.getUser()?.fullName || auth.getUser()?.username }}</strong><small>@{{ auth.getUser()?.username }} · {{ auth.getUser()?.role || 'Service desk user' }}</small></span><button class="logout-button" type="button" (click)="logout()">Log out</button></div></header>
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+}

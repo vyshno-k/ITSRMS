@@ -1,0 +1,156 @@
+<section class="panel" *ngIf="ticket">
+  <div class="page-header compact">
+    <div>
+      <p class="eyebrow">Ticket details</p>
+      <h1>{{ ticket.ticketNumber }}</h1>
+      <p>{{ ticket.subject }}</p>
+    </div>
+    <span class="status-badge">{{ ticket.status }}</span>
+  </div>
+
+  <p *ngIf="actionError" class="error-text action-error">{{ actionError }}</p>
+
+  <div class="details-grid">
+    <div class="detail-card">
+      <h3>Request summary</h3>
+      <p><strong>Ticket number:</strong> {{ ticket.ticketNumber }}</p>
+      <p><strong>Employee:</strong> {{ ticket.employeeId }} — {{ employeeName(ticket.employeeId) }}</p>
+      <p><strong>Category:</strong> {{ ticket.categoryId }} — {{ ticket.categoryName || categoryName(ticket.categoryId) }}</p>
+      <p><strong>Request type:</strong> {{ ticket.serviceTypeId }} — {{ ticket.serviceTypeName || serviceTypeName(ticket.serviceTypeId) }}</p>
+      <p><strong>Priority:</strong> {{ ticket.priorityId }} — {{ ticket.priorityName || priorityName(ticket.priorityId) }}</p>
+      <p><strong>Subject:</strong> {{ ticket.subject }}</p>
+      <p><strong>Created:</strong> {{ displayDate(ticket.createdAt) }}</p>
+      <p><strong>Updated:</strong> {{ displayDate(ticket.updatedAt) }}</p>
+      <p><strong>Assigned engineer:</strong> {{ ticket.engineerName ? ticket.engineerId + ' — ' + ticket.engineerName : 'Not assigned' }}</p>
+    </div>
+
+    <div class="detail-card">
+      <h3>Workflow</h3>
+      <ol class="workflow-steps">
+        <li [class.active]="ticket.status === 'New'">Priority assigned</li>
+        <li [class.active]="ticket.status === 'Assigned'">Engineer assigned</li>
+        <li [class.active]="ticket.status === 'In Progress' || ticket.status === 'Reopened'">Engineer started work</li>
+        <li [class.active]="ticket.status === 'In Progress' || ticket.status === 'Reopened'">SLA tracked</li>
+        <li [class.active]="ticket.status === 'Resolved'">Resolution added</li>
+        <li [class.active]="ticket.status === 'Closed'">Employee confirmed</li>
+        <li [class.active]="ticket.status === 'Closed'">Ticket closed</li>
+        <li [class.active]="ticket.status === 'Closed'">History updated</li>
+      </ol>
+
+      <div class="stacked-actions">
+        <button *ngIf="ticket.status !== 'Closed'" class="secondary-button" type="button" (click)="startEdit()">Edit request</button>
+        <button *ngIf="ticket.status === 'Assigned' || ticket.status === 'Reopened'" class="primary-button" type="button" [disabled]="saving" (click)="startProgress()">Mark In Progress</button>
+        <button *ngIf="ticket.status === 'Resolved'" class="primary-button" type="button" [disabled]="saving" (click)="close()">Confirm & Close</button>
+        <button *ngIf="ticket.status === 'Resolved'" class="secondary-button" type="button" [disabled]="saving" (click)="reopen()">Reopen ticket</button>
+      </div>
+
+      <label *ngIf="ticket.status === 'Assigned' || ticket.status === 'Reopened'">
+        <span>Action performed by</span>
+        <select [formControl]="progressForm.controls.performedBy">
+          <option [ngValue]="null">Select active employee</option>
+          <option *ngFor="let employee of employees" [ngValue]="employee.id">{{ employee.id }} — {{ employee.fullName }}</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="sla-box">
+    <div><p class="eyebrow">SLA Management</p><h3>SLA status</h3></div>
+    <div class="sla-grid">
+      <div><span>Response</span><strong [class.breached]="ticket.responseSlaStatus === 'Breached'">{{ ticket.responseSlaStatus || 'On Track' }}</strong><small>Due: {{ displayDate(ticket.effectiveResponseDueAt) }}</small></div>
+      <div><span>Resolution</span><strong [class.breached]="ticket.resolutionSlaStatus === 'Breached'">{{ ticket.resolutionSlaStatus || 'On Track' }}</strong><small>Due: {{ displayDate(ticket.effectiveResolutionDueAt) }}</small></div>
+    </div>
+    <p *ngIf="ticket.isSlaPaused" class="sla-paused">SLA is currently paused for this status.</p>
+    <p *ngIf="ticket.isSlaBreached" class="error-text">This ticket has breached at least one configured SLA target.</p>
+  </div>
+
+  <div class="description-box" *ngIf="!editing">
+    <div class="section-heading-row">
+      <h3>Description</h3>
+      <button *ngIf="ticket.status !== 'Closed'" type="button" class="secondary-button" (click)="startEdit()">Edit description</button>
+    </div>
+    <p>{{ ticket.description }}</p>
+  </div>
+
+  <form *ngIf="editing" [formGroup]="editForm" (ngSubmit)="saveEdit()" class="mini-form edit-form">
+    <div class="section-heading-row"><h3>Edit request</h3><button type="button" class="secondary-button" (click)="cancelEdit()">Cancel</button></div>
+    <div class="field-grid">
+      <label><span>Category</span><select formControlName="categoryId"><option *ngFor="let item of categories" [ngValue]="item.id">{{ item.id }} - {{ item.name }}</option></select></label>
+      <label><span>Request type</span><select formControlName="serviceTypeId"><option *ngFor="let item of serviceTypes" [ngValue]="item.id">{{ item.name }}</option></select></label>
+      <label><span>Priority</span><select formControlName="priorityId"><option *ngFor="let item of priorities" [ngValue]="item.id">{{ item.id }} - {{ item.name }}</option></select></label>
+    </div>
+    <label><span>Subject</span><input type="text" formControlName="subject" /></label>
+    <label><span>Description</span><textarea rows="7" formControlName="description"></textarea></label>
+    <button type="submit" class="primary-button" [disabled]="saving">{{ saving ? 'Saving...' : 'Save changes' }}</button>
+  </form>
+
+  <div class="detail-grid-two">
+    <form [formGroup]="assignForm" (ngSubmit)="assign()" class="mini-form" *ngIf="ticket.status !== 'Closed' && ticket.status !== 'Resolved'">
+      <h3>Assign support engineer</h3>
+      <label><span>Active engineer</span><select formControlName="engineerId"><option [ngValue]="null">Select active engineer</option><option *ngFor="let engineer of engineers" [ngValue]="engineer.id">{{ engineer.id }} — {{ engineer.fullName }}</option></select></label>
+      <label><span>Assignment performed by</span><select formControlName="performedBy"><option [ngValue]="null">Select active employee</option><option *ngFor="let employee of employees" [ngValue]="employee.id">{{ employee.id }} — {{ employee.fullName }}</option></select></label>
+      <button type="submit" class="primary-button" [disabled]="saving">Assign engineer</button>
+    </form>
+
+    <form *ngIf="ticket.status === 'In Progress'" [formGroup]="resolveForm" (ngSubmit)="resolve()" class="mini-form">
+      <h3>Investigation & resolution</h3>
+      <label><span>Investigation notes</span><textarea rows="4" formControlName="investigationNotes" placeholder="Record diagnosis, checks performed and findings..."></textarea></label>
+      <label><span>Resolution notes</span><textarea rows="4" formControlName="resolutionNotes" placeholder="Record the fix or final resolution..."></textarea></label>
+      <label><span>Resolved by</span><select formControlName="resolvedBy"><option [ngValue]="null">Select active employee</option><option *ngFor="let employee of employees" [ngValue]="employee.id">{{ employee.id }} — {{ employee.fullName }}</option></select></label>
+      <button type="submit" class="primary-button" [disabled]="saving">{{ saving ? 'Resolving...' : 'Mark Resolved' }}</button>
+    </form>
+  </div>
+
+  <div class="history-box" *ngIf="ticket.latestResolution">
+    <div class="section-heading-row"><h3>Latest resolution</h3><span class="status-badge">SLA: {{ ticket.latestResolution.slaResult }}</span></div>
+    <p><strong>Resolved at:</strong> {{ displayDate(ticket.latestResolution.resolvedAt) }}</p>
+    <p><strong>Resolved by:</strong> {{ ticket.latestResolution.resolvedBy }} — {{ employeeName(ticket.latestResolution.resolvedBy) }}</p>
+    <p><strong>Investigation notes:</strong></p>
+    <div class="history-value">{{ ticket.latestResolution.investigationNotes }}</div>
+    <p><strong>Resolution notes:</strong></p>
+    <div class="history-value">{{ ticket.latestResolution.resolutionNotes }}</div>
+    <p *ngIf="ticket.latestResolution.resolutionDueAt"><strong>Resolution due:</strong> {{ displayDate(ticket.latestResolution.resolutionDueAt) }}</p>
+  </div>
+
+  <form [formGroup]="commentForm" (ngSubmit)="addComment()" class="mini-form" *ngIf="ticket.status !== 'Closed'">
+    <h3>Add comment</h3>
+    <label><span>Comment by employee (optional)</span><select formControlName="employeeId"><option [ngValue]="null">Team / unspecified</option><option *ngFor="let employee of employees" [ngValue]="employee.id">{{ employee.id }} — {{ employee.fullName }}</option></select></label>
+    <label><span>Comment</span><textarea rows="3" formControlName="commentText" placeholder="Add a note for the team..."></textarea></label>
+    <button type="submit" class="primary-button" [disabled]="saving">Post comment</button>
+  </form>
+
+  <div class="history-box">
+    <h3>History</h3>
+    <p *ngIf="historyError" class="error-text">{{ historyError }}</p>
+    <ul *ngIf="history.length; else noHistory">
+      <li *ngFor="let item of pagedHistory">
+        <div>
+          <strong>{{ item.action }}</strong>
+          <small *ngIf="item.performedBy"> by employee {{ item.performedBy }} — {{ employeeName(item.performedBy) }}</small>
+          <div class="history-value" *ngIf="item.newValue">{{ item.newValue }}</div>
+        </div>
+        <span>{{ displayDate(item.createdAt) }}</span>
+      </li>
+    </ul>
+    <ng-template #noHistory><p>No history available for this ticket.</p></ng-template><div class="pagination" *ngIf="history.length"><span>Showing {{(historyPage - 1) * detailPageSize + 1}}–{{Math.min(historyPage * detailPageSize, history.length)}} of {{history.length}} history entries</span><div><button [disabled]="historyPage===1" (click)="setHistoryPage(historyPage-1)">Previous</button><button *ngFor="let page of [].constructor(historyPages); let i=index" [class.selected]="historyPage===i+1" (click)="setHistoryPage(i+1)">{{i+1}}</button><button [disabled]="historyPage===historyPages" (click)="setHistoryPage(historyPage+1)">Next</button></div></div>
+  </div>
+
+  <div class="history-box" *ngIf="comments.length">
+    <h3>Comments</h3>
+    <ul>
+      <li *ngFor="let comment of pagedComments">
+        <div><strong>{{ comment.employeeId ? ('Employee ' + comment.employeeId + ' — ' + employeeName(comment.employeeId)) : 'Team' }}</strong><div class="history-value">{{ comment.commentText }}</div></div>
+        <span>{{ displayDate(comment.createdAt) }}</span>
+      </li>
+    </ul><div class="pagination" *ngIf="comments.length"><span>Showing {{(commentsPage - 1) * detailPageSize + 1}}–{{Math.min(commentsPage * detailPageSize, comments.length)}} of {{comments.length}} comments</span><div><button [disabled]="commentsPage===1" (click)="setCommentsPage(commentsPage-1)">Previous</button><button *ngFor="let page of [].constructor(commentPages); let i=index" [class.selected]="commentsPage===i+1" (click)="setCommentsPage(i+1)">{{i+1}}</button><button [disabled]="commentsPage===commentPages" (click)="setCommentsPage(commentsPage+1)">Next</button></div></div>
+  </div>
+
+  <a routerLink="/service-requests" class="secondary-button">Back to all requests</a>
+</section>
+
+<div class="empty-state" *ngIf="loading">Loading ticket details...</div>
+
+<div class="empty-state error-state" *ngIf="!loading && errorMessage">
+  <p>{{ errorMessage }}</p>
+  <button type="button" class="primary-button" (click)="load()">Try again</button>
+</div>

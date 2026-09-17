@@ -1,0 +1,71 @@
+<section class="panel">
+  <div class="page-header compact">
+    <div>
+      <p class="eyebrow">New request</p>
+      <h1>Create IT Service Request</h1>
+      <p>Select an employee, category, request type and priority, then describe the issue.</p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="request-form">
+    <div class="field-grid">
+      <label>
+        <span>Employee</span>
+        <select formControlName="employeeId" (change)="onEmployeeChange()">
+          <option [ngValue]="null">{{ loadingEmployees ? 'Loading employees...' : 'Select employee' }}</option>
+          <option *ngFor="let employee of employees" [ngValue]="employee.id">
+            {{ employee.id }} — {{ employee.fullName }}{{ employee.isActive === false ? ' (Inactive)' : '' }}
+          </option>
+        </select>
+        <small *ngIf="selectedEmployeeName" class="field-value">{{ selectedEmployeeName }}</small>
+        <small *ngIf="form.controls.employeeId.invalid && form.controls.employeeId.touched" class="field-error">Employee is required.</small>
+      </label>
+
+      <label>
+        <span>Category</span>
+        <select formControlName="categoryId">
+          <option [ngValue]="null">Select category</option>
+          <option *ngFor="let category of categories" [ngValue]="category.id">{{ category.id }} - {{ category.name }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Request type</span>
+        <select formControlName="serviceTypeId">
+          <option [ngValue]="null">Select request type</option>
+          <option *ngFor="let type of serviceTypes" [ngValue]="type.id">{{ type.name }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Priority</span>
+        <select formControlName="priorityId">
+          <option [ngValue]="null">Select priority</option>
+          <option *ngFor="let priority of priorities" [ngValue]="priority.id">{{ priority.id }} - {{ priority.name }}</option>
+        </select>
+      </label>
+    </div>
+
+    <p class="field-help">Request types available in this module: Software, Hardware and Network.</p>
+
+    <label>
+      <span>Subject</span>
+      <input type="text" formControlName="subject" placeholder="Brief summary" />
+    </label>
+
+    <label>
+      <span>Description</span>
+      <textarea rows="7" formControlName="description" placeholder="Describe the issue and any useful investigation details..."></textarea>
+    </label>
+
+    <div class="form-actions">
+      <button type="button" class="secondary-button" routerLink="/service-requests">Cancel</button>
+      <button type="submit" class="primary-button" [disabled]="submitting || loadingEmployees || !employees.length">
+        {{ submitting ? 'Submitting...' : 'Submit request' }}
+      </button>
+    </div>
+
+    <p class="success-toast" *ngIf="successMessage" role="status" aria-live="polite">✓ {{ successMessage }}</p>
+    <p class="error-text" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </form>
+</section>

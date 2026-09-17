@@ -1,0 +1,28 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="brand-mark">IT</div>
+    <h1>IT Service Management</h1>
+    <p class="subtitle">Sign in to continue to Employee Management</p>
+
+    <form (ngSubmit)="login()">
+      <label>Username</label>
+      <input name="username" [(ngModel)]="username" placeholder="Enter username" autocomplete="username" />
+
+      <label>Password</label>
+      <input name="password" type="password" [(ngModel)]="password" placeholder="Enter password" autocomplete="current-password" />
+
+      <button class="primary" type="submit" [disabled]="loading">
+        <span class="spinner" *ngIf="loading"></span>
+        {{ loading ? 'Logging in...' : 'Login' }}
+      </button>
+
+      <div class="message success" *ngIf="success">{{ success }}</div>
+      <div class="message error" *ngIf="error">{{ error }}</div>
+
+      <p class="switch">Don't have an account?
+        <button type="button" class="link-button" (click)="goToRegister()">Create an account</button>
+      </p>
+      <p class="demo">Demo: <b>admin</b> / <b>Admin@123</b></p>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="page employee-page" style="background: linear-gradient(180deg, #edf3f2 0%, #f5faf8 46%, #eaf1ef 100%);">
+  <main class="content">
+    <section class="heading"><div><h1>Employee Management</h1><p>Create, maintain, search and view employee details.</p></div></section>
+
+    <section class="dashboard-hero">
+      <div class="hero-copy">
+        <span class="eyebrow">WORKFORCE OVERVIEW</span>
+        <h2>Welcome back, {{user?.fullName || user?.username}}.</h2>
+        <p>Everything you need to manage your workforce is right here. Add, search and maintain employee records without extra steps.</p>
+      </div>
+      <button class="hero-action" (click)="addEmployee()">
+        <span class="plus">+</span>
+        <span><strong>Add Employee</strong><small>Create a new record</small></span>
+      </button>
+    </section>
+
+    <section class="stats-grid" aria-label="Employee overview">
+      <article class="stat-card">
+        <div class="stat-icon people">◉</div>
+        <div><span>Total Employees</span><strong>{{employees.length}}</strong><small>Records in the system</small></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-icon active-icon">✓</div>
+        <div><span>Active Employees</span><strong>{{activeEmployeeCount}}</strong><small>Currently active</small></div>
+      </article>
+    </section>
+
+    <div class="search"><span>⌕</span><input [(ngModel)]="searchText" (input)="filter()" placeholder="Search employee by code, name, email, department..." /></div>
+
+    <div *ngIf="loading" class="state loading-state"><span class="big-spinner"></span>Loading employees...</div>
+    <div *ngIf="!loading && errorMessage" class="state error-state">{{errorMessage}}</div>
+    <div *ngIf="!loading && !errorMessage && filteredEmployees.length===0" class="state">No employees found.</div>
+
+    <section class="table-card" *ngIf="!loading && !errorMessage && filteredEmployees.length">
+      <div class="table-title"><div><h2>Employees</h2><span>{{filteredEmployees.length}} employee(s)</span></div><button class="refresh" (click)="loadEmployees()">↻ Refresh</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th><th>Joining Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody><tr *ngFor="let e of pagedEmployees"><td><b>{{e.employeeCode}}</b></td><td>{{e.firstName}} {{e.lastName}}</td><td>{{e.email}}</td><td><span class="badge">{{e.department}}</span></td><td>{{e.designation}}</td><td>{{e.dateOfJoining | date:'dd-MM-yyyy'}}</td><td><span [class.active]="e.isActive" [class.inactive]="!e.isActive">{{e.isActive?'Active':'Inactive'}}</span></td><td class="row-actions"><button class="edit" (click)="editEmployee(e)">Edit</button><button class="delete" [disabled]="deletingId===e.id" [attr.aria-busy]="deletingId===e.id" (click)="deleteEmployee(e)">{{deletingId===e.id?'Deleting...':'Delete'}}</button></td></tr></tbody>
+      </table></div><div class="pagination"><span>Showing {{rangeStart}}–{{rangeEnd}} of {{filteredEmployees.length}} employees</span><div><button [disabled]="currentPage===1" (click)="goToPage(currentPage-1)">Previous</button><button *ngFor="let page of [].constructor(totalPages); let i=index" [class.selected]="currentPage===i+1" (click)="goToPage(i+1)">{{i+1}}</button><button [disabled]="currentPage===totalPages" (click)="goToPage(currentPage+1)">Next</button></div></div>
+    </section>
+  </main>
+
+  <div *ngIf="toastMessage" class="toast" [class.toast-error]="toastType==='error'" [style.background]="toastType==='error' ? '#fff0f0' : '#dff7c8'" [style.color]="toastType==='error' ? '#b3261e' : '#1f5e2c'" [style.border]="toastType==='error' ? '1px solid #f0c7c7' : '1px solid #a9df7b'" role="status" aria-live="polite">✓ {{toastMessage}}</div>
+</div>

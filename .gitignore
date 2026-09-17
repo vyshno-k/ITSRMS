@@ -1,0 +1,35 @@
+# .NET build output
+backend/bin/
+backend/obj/
+
+# Local database files
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal
+database/*.db
+database/*.db-shm
+database/*.db-wal
+
+# Angular dependencies and generated output
+frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+
+# Local environment files
+*.local.json
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.vs/
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+Thumbs.db
+.DS_Store
+
+# Separate nested checkout
+IT-SRMS-REPO/

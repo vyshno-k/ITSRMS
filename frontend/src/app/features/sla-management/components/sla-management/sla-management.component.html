@@ -1,0 +1,60 @@
+<div class="module-page">
+  <header class="module-header">
+    <div>
+      <h1>SLA Management</h1>
+      <p>Configure response/resolution targets, pause rules and monitor SLA performance.</p>
+    </div>
+    <a routerLink="/service-requests" class="employee-gateway">
+      <span class="gateway-icon">◎</span>
+      <span><strong>Service Requests</strong><small>Open the service request list</small></span>
+      <span class="gateway-arrow">→</span>
+    </a>
+  </header>
+
+  <p *ngIf="errorMessage" class="message error-text">{{ errorMessage }}</p>
+  <p *ngIf="successMessage" class="message success-text">{{ successMessage }}</p>
+
+  <section class="card">
+    <form [formGroup]="form">
+    <div class="section-title"><div><h2>Targets by priority</h2></div><button class="primary-button" type="button" [disabled]="saving" (click)="saveConfiguration()">{{ saving ? 'Saving...' : 'Save SLA targets' }}</button></div>
+    <div class="sla-table-wrap">
+      <table>
+        <thead><tr><th>Priority</th><th>Response target (hours)</th><th>Resolution target (hours)</th><th>Configured</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let c of configurations">
+            <td><strong>{{ c.priorityName }}</strong></td>
+            <td><input type="number" min="0.1" step="0.1" [formControlName]="'response' + c.priorityId" /> <span>hours</span></td>
+            <td><input type="number" min="1" [formControlName]="'resolution' + c.priorityId" /> <span>hours</span></td>
+            <td>{{ formatTarget(c) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><div><h2>SLA status</h2></div>
+      <div class="filter-buttons"><button type="button" [class.active]="filter === 'all'" (click)="setFilter('all')">All</button><button type="button" [class.active]="filter === 'breached'" (click)="setFilter('breached')">Breached</button><button type="button" [class.active]="filter === 'paused'" (click)="setFilter('paused')">Paused</button><button type="button" [class.active]="filter === 'ontrack'" (click)="setFilter('ontrack')">On Track</button></div>
+    </div>
+    <p *ngIf="loading">Loading SLA status...</p>
+    <p *ngIf="!loading && !tickets.length">No tickets match this SLA filter.</p>
+    <div class="sla-table-wrap" *ngIf="!loading && tickets.length">
+      <table>
+        <thead><tr><th>Service Request ID</th><th>Ticket</th><th>Priority</th><th>Status</th><th>Response SLA</th><th>Resolution SLA</th><th>Resolution due</th><th>Engineer</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let t of pagedTickets" [class.breached-row]="t.isBreached">
+            <td>{{ t.id }}</td>
+            <td><a [routerLink]="['/service-requests', t.id]"><strong>{{ t.ticketNumber }}</strong></a><div class="subject">{{ t.subject }}</div></td>
+            <td>{{ t.priorityName }}</td>
+            <td>{{ displayStatus(t.status) }}</td>
+            <td><span class="sla-pill" [class.breached]="t.responseSlaStatus === 'Breached'" [class.paused]="t.responseSlaStatus === 'Paused'">{{ t.responseSlaStatus }}</span></td>
+            <td><span class="sla-pill" [class.breached]="t.resolutionSlaStatus === 'Breached'" [class.paused]="t.resolutionSlaStatus === 'Paused'">{{ t.resolutionSlaStatus }}</span></td>
+            <td>{{ t.resolutionDueAt | date:'medium' }}</td>
+            <td>{{ t.engineerName || 'Not assigned' }}</td>
+          </tr>
+        </tbody>
+      </table><div class="pagination"><span>Showing {{(currentPage - 1) * pageSize + 1}}–{{Math.min(currentPage * pageSize, tickets.length)}} of {{tickets.length}} tickets</span><div><button [disabled]="currentPage===1" (click)="goToPage(currentPage-1)">Previous</button><button *ngFor="let page of [].constructor(totalPages); let i=index" [class.selected]="currentPage===i+1" (click)="goToPage(i+1)">{{i+1}}</button><button [disabled]="currentPage===totalPages" (click)="goToPage(currentPage+1)">Next</button></div></div>
+    </div>
+  </section>
+</div>

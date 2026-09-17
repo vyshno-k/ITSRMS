@@ -1,0 +1,180 @@
+<div class="service-request">
+
+  <h1>Service Request Management</h1>
+  <p>Create a request for an IT service</p>
+
+  <!-- Create Request Form -->
+  <div class="request-form">
+
+    <h2>Create Service Request</h2>
+
+    <div class="form-group">
+      <label>Service</label>
+
+      <select
+        [(ngModel)]="selectedServiceId"
+        (ngModelChange)="onServiceChange()">
+
+        <option [ngValue]="null">Select a service</option>
+
+        @for (service of services; track service.id) {
+          <option [ngValue]="service.id">
+            {{ service.serviceName }}
+          </option>
+        }
+
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Requested By</label>
+
+      <input
+        type="text"
+        [(ngModel)]="requestedBy"
+        placeholder="Enter your name">
+    </div>
+
+    <div class="form-group">
+      <label>Request Title</label>
+
+      <input
+        type="text"
+        [(ngModel)]="title"
+        placeholder="Enter request title">
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+
+      <textarea
+        rows="4"
+        [(ngModel)]="description"
+        placeholder="Describe your request">
+      </textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Priority</label>
+
+      <select [(ngModel)]="priority">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+        <option value="Critical">Critical</option>
+      </select>
+    </div>
+
+    <button
+      class="submit-btn"
+      (click)="submitRequest()">
+      Submit Request
+    </button>
+
+  </div>
+
+
+  <!-- Service Requests List -->
+  <div class="requests-section">
+
+    <h2>Service Requests</h2>
+
+    <p>Requests created by employees</p>
+
+    @if (requests.length === 0) {
+
+      <p class="no-requests">
+        No service requests found.
+      </p>
+
+    } @else {
+
+      <div class="table-container">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Request Title</th>
+              <th>Employee</th>
+              <th>Service</th>
+              <th>Priority</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            @for (request of requests; track request.id) {
+
+              <tr>
+
+                <!-- Request Title + Description -->
+                <td class="request-title">
+
+                  <strong>
+                    {{ request.title }}
+                  </strong>
+
+                  @if (request.description) {
+                    <small>
+                      {{ request.description }}
+                    </small>
+                  }
+
+                </td>
+
+
+                <!-- Employee -->
+                <td class="employee-name">
+                  {{ request.requestedBy }}
+                </td>
+
+
+                <!-- Service -->
+                <td class="service-name">
+                  {{ getServiceName(request.serviceCatalogId) }}
+                </td>
+
+
+                <!-- Priority -->
+                <td>
+
+                  <span
+                    class="priority-badge"
+                    [class.low]="request.priority === 'Low'"
+                    [class.medium]="request.priority === 'Medium'"
+                    [class.high]="request.priority === 'High'"
+                    [class.critical]="request.priority === 'Critical'">
+
+                    {{ request.priority }}
+
+                  </span>
+
+                </td>
+
+
+                <!-- Status -->
+                <td>
+
+                  <span class="status-badge">
+                    {{ request.status }}
+                  </span>
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    }
+
+  </div>
+
+</div>

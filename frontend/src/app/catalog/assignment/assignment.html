@@ -1,0 +1,381 @@
+<div class="assignment-container">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h2>Assignment Management</h2>
+    <p>Assign and manage service requests for support engineers</p>
+  </div>
+
+
+  <!-- CREATE ASSIGNMENT -->
+  <div class="card assignment-form">
+
+    <h3>Create Assignment</h3>
+
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label for="serviceRequestId">Service Request ID</label>
+
+        <select
+          id="serviceRequestId"
+          [(ngModel)]="selectedServiceRequestId"
+          name="serviceRequestId">
+          <option [ngValue]="null">Select a service request</option>
+          <option *ngFor="let request of serviceRequests" [ngValue]="request.id">{{ request.ticketNumber }} - {{ request.subject }} ({{ request.status }})</option>
+        </select>
+      </div>
+
+
+      <div class="form-group">
+        <label for="supportEngineer">Support Engineer</label>
+
+        <select
+          id="supportEngineer"
+          [(ngModel)]="selectedSupportEngineerId"
+        >
+
+          <option [ngValue]="null">
+            Select Active Engineer
+          </option>
+
+          <option
+            *ngFor="let engineer of supportEngineers"
+            [ngValue]="engineer.id"
+          >
+            {{ engineer.name }}
+          </option>
+
+        </select>
+
+        <small>
+          Only active engineers can be assigned tickets.
+        </small>
+      </div>
+
+
+      <div class="form-group">
+        <label for="status">Status</label>
+
+        <select
+          id="status"
+          [(ngModel)]="selectedStatus"
+        >
+
+          <option value="Assigned">Assigned</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+
+        </select>
+      </div>
+
+    </div>
+
+    <button
+      type="button"
+      class="primary-btn"
+      (click)="createAssignment()"
+    >
+      Assign Ticket
+    </button>
+
+  </div>
+
+
+  <!-- SUPPORT ENGINEERS -->
+  <div class="card">
+
+    <div class="section-header">
+
+      <div>
+        <h3>Support Engineers</h3>
+        <p>Maintain support engineers and their active status</p>
+      </div>
+
+    </div>
+
+
+    <div
+      class="empty-state"
+      *ngIf="allSupportEngineers.length === 0"
+    >
+      No support engineers found.
+    </div>
+
+
+    <div class="table-wrapper">
+
+      <table
+        class="data-table"
+        *ngIf="allSupportEngineers.length > 0"
+      >
+
+        <thead>
+          <tr>
+            <th>Engineer</th>
+            <th>Status</th>
+            <th>Current Workload</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="let engineer of allSupportEngineers"
+          >
+
+            <td>
+              <strong>{{ engineer.name }}</strong>
+            </td>
+
+            <td>
+
+              <span
+                class="status-badge"
+                [class.active]="engineer.isActive"
+                [class.inactive]="!engineer.isActive"
+              >
+                {{ engineer.isActive ? 'Active' : 'Inactive' }}
+              </span>
+
+            </td>
+
+            <td>
+              <strong>
+                {{ getEngineerWorkload(engineer.id) }}
+              </strong>
+              ticket(s)
+            </td>
+
+            <td>
+
+              <button
+                type="button"
+                class="secondary-btn"
+                (click)="toggleEngineerStatus(engineer)"
+              >
+                {{ engineer.isActive ? 'Deactivate' : 'Activate' }}
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+
+  <!-- ENGINEER WORKLOAD -->
+  <div class="card">
+
+    <div class="section-header">
+
+      <div>
+        <h3>Engineer Workload</h3>
+        <p>
+          View active tickets assigned to each engineer
+        </p>
+      </div>
+
+    </div>
+
+
+    <div class="workload-grid">
+
+      <div
+        class="workload-card"
+        *ngFor="let engineer of allSupportEngineers"
+      >
+
+        <div class="workload-name">
+          {{ engineer.name }}
+        </div>
+
+        <div class="workload-number">
+          {{ getEngineerWorkload(engineer.id) }}
+        </div>
+
+        <div class="workload-label">
+          Active Tickets
+        </div>
+
+        <span
+          class="status-badge"
+          [class.active]="engineer.isActive"
+          [class.inactive]="!engineer.isActive"
+        >
+          {{ engineer.isActive ? 'Active' : 'Inactive' }}
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ALL ASSIGNMENTS -->
+  <div class="card assignment-list">
+
+    <div class="section-header">
+
+      <div>
+        <h3>All Assignments</h3>
+        <p>View and reassign service requests</p>
+      </div>
+
+    </div>
+
+
+    <div
+      class="empty-state"
+      *ngIf="assignments.length === 0"
+    >
+      No assignments found.
+    </div>
+
+
+    <div
+      class="table-wrapper"
+      *ngIf="assignments.length > 0"
+    >
+
+      <table class="data-table">
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Service Request</th>
+            <th>Support Engineer</th>
+            <th>Assigned Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="let assignment of pagedAssignments"
+          >
+
+            <td>
+              #{{ assignment.id }}
+            </td>
+
+            <td>
+              #{{ assignment.serviceRequestId }}
+            </td>
+
+            <td>
+              <strong>
+                {{ assignment.assignedTo }}
+              </strong>
+            </td>
+
+            <td>
+              {{ assignment.assignedDate | date:'medium' }}
+            </td>
+
+            <td>
+              <span class="assignment-status">
+                {{ assignment.status }}
+              </span>
+            </td>
+
+            <td>
+
+              <button
+                type="button"
+                class="reassign-btn"
+                (click)="startReassignment(assignment)"
+              >
+                Reassign
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table><div class="pagination"><span>Showing {{(currentPage - 1) * pageSize + 1}}–{{Math.min(currentPage * pageSize, assignments.length)}} of {{assignments.length}} assignments</span><div><button [disabled]="currentPage===1" (click)="goToPage(currentPage-1)">Previous</button><button *ngFor="let page of [].constructor(totalPages); let i=index" [class.selected]="currentPage===i+1" (click)="goToPage(i+1)">{{i+1}}</button><button [disabled]="currentPage===totalPages" (click)="goToPage(currentPage+1)">Next</button></div></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- REASSIGN TICKET -->
+  <div
+    id="reassign-form"
+    class="card reassign-card"
+    *ngIf="reassigningAssignment"
+  >
+
+    <h3>Reassign Ticket</h3>
+
+    <p>
+      Reassign Service Request
+      <strong>
+        #{{ reassigningAssignment.serviceRequestId }}
+      </strong>
+    </p>
+
+
+    <div class="form-group">
+
+      <label for="reassignEngineer">
+        New Support Engineer
+      </label>
+
+      <select
+        id="reassignEngineer"
+        [(ngModel)]="reassignSupportEngineerId"
+      >
+
+        <option [ngValue]="null">
+          Select Active Engineer
+        </option>
+
+        <option
+          *ngFor="let engineer of supportEngineers"
+          [ngValue]="engineer.id"
+        >
+          {{ engineer.name }}
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="reassign-actions">
+
+      <button
+        type="button"
+        class="primary-btn"
+        (click)="confirmReassignment()"
+      >
+        Confirm Reassignment
+      </button>
+
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="cancelReassignment()"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

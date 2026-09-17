@@ -1,0 +1,49 @@
+<div class="request-list">
+  <div *ngIf="successMessage" class="toast" role="status" aria-live="polite">✓ {{ successMessage }}</div>
+
+  <div class="header">
+    <div><p class="eyebrow">Service desk</p><h1>Service requests</h1><p class="header-copy">Search, filter and track every request in one place.</p></div>
+    <a class="new-request" routerLink="/service-requests/new"><span>+</span> New request</a>
+  </div>
+
+  <div class="filters">
+    <label class="search-field"><span>Find a request</span><input type="search" [(ngModel)]="searchText" placeholder="Ticket, subject or description" (keyup.enter)="load()" /></label>
+    <label><span>Status</span><select [(ngModel)]="statusFilter" (ngModelChange)="load()"><option value="">All statuses</option><option *ngFor="let status of statuses" [value]="status">{{ status }}</option></select></label>
+    <label><span>Priority</span><select [(ngModel)]="priorityFilter" (ngModelChange)="load()"><option [ngValue]="null">All priorities</option><option *ngFor="let p of priorities" [ngValue]="p.id">{{ p.name }}</option></select></label>
+    <label><span>Category</span><select [(ngModel)]="categoryFilter" (ngModelChange)="load()"><option [ngValue]="null">All categories</option><option *ngFor="let c of categories" [ngValue]="c.id">{{ c.name }}</option></select></label>
+    <button type="button" class="primary-button" (click)="load()">Search</button>
+    <button type="button" class="secondary-button" (click)="clearFilters()">Clear</button>
+  </div>
+
+  <div class="list-status" *ngIf="loading"><span class="spinner"></span> Loading requests...</div>
+  <p *ngIf="!loading && errorMessage" class="error-text">{{ errorMessage }}</p>
+  <div class="empty-state" *ngIf="!loading && !errorMessage && !tickets.length"><strong>No requests found</strong><span>Try changing your filters or create a new service request.</span></div>
+
+  <div class="table-wrap" *ngIf="!loading && tickets.length">
+    <div class="table-heading"><div><strong>Request directory</strong><span>{{tickets.length}} request{{tickets.length === 1 ? '' : 's'}} found</span></div><span class="live-indicator"><i></i> Live data</span></div>
+    <table>
+      <thead>
+        <tr>
+          <th>Ticket #</th><th>Employee</th><th>Category</th><th>Type</th><th>Priority</th>
+          <th>Subject</th><th>Description</th><th>Status</th><th>Engineer</th><th>SLA</th><th>Resolution due</th><th>Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of pagedTickets" [routerLink]="['/service-requests', t.id]" tabindex="0">
+          <td data-label="Ticket"><strong>{{ t.ticketNumber }}</strong></td>
+          <td data-label="Employee">{{ t.employeeId }}</td>
+          <td data-label="Category">{{ t.categoryName || '—' }}</td>
+          <td data-label="Type">{{ t.serviceTypeName || '—' }}</td>
+          <td data-label="Priority"><span class="priority-pill priority-{{t.priorityName?.toLowerCase()}}">{{ t.priorityName || '—' }}</span></td>
+          <td data-label="Subject" class="subject-cell">{{ t.subject }}</td>
+          <td data-label="Description" class="description-cell" title="{{ t.description }}">{{ t.description }}</td>
+          <td data-label="Status"><span class="badge status-{{t.status.toLowerCase().replace(' ', '-')}}">{{ t.status }}</span></td>
+          <td data-label="Engineer">{{ t.engineerId ? t.engineerName : 'Not assigned' }}</td>
+          <td data-label="SLA"><span class="sla-list-pill" [class.breached]="t.isSlaBreached" [class.paused]="t.isSlaPaused">{{ t.isSlaPaused ? 'Paused' : (t.isSlaBreached ? 'Breached' : (t.resolutionSlaStatus || 'On Track')) }}</span></td>
+          <td data-label="Resolution due" class="date-cell">{{ displayDate(t.effectiveResolutionDueAt) }}</td>
+          <td data-label="Created" class="date-cell">{{ displayDate(t.createdAt) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div><div class="pagination" *ngIf="!loading && tickets.length"><span>Showing {{(currentPage - 1) * pageSize + 1}}–{{Math.min(currentPage * pageSize, tickets.length)}} of {{tickets.length}} requests</span><div><button [disabled]="currentPage===1" (click)="goToPage(currentPage-1)">Previous</button><button *ngFor="let page of [].constructor(totalPages); let i=index" [class.selected]="currentPage===i+1" (click)="goToPage(i+1)">{{i+1}}</button><button [disabled]="currentPage===totalPages" (click)="goToPage(currentPage+1)">Next</button></div></div>
+</div>

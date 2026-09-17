@@ -1,0 +1,484 @@
+<div class="service-catalog">
+
+  <!-- HEADER -->
+  <div class="header">
+
+    <div>
+      <h1>Service Catalog</h1>
+      <p>Manage IT services available to employees</p>
+    </div>
+
+    <button
+      type="button"
+      class="add-btn"
+      (click)="openAddForm()">
+      + Add Service
+    </button>
+
+  </div>
+  @if (successMessage) { <div class="save-message success-message">✓ {{ successMessage }}</div> }
+  @if (errorMessage && !showAddForm) { <div class="save-message error-message">{{ errorMessage }}</div> }
+
+
+  <!-- ADD / EDIT FORM -->
+  @if (showAddForm) {
+
+    <div id="service-form" class="form-container">
+
+      <!-- FORM HEADER -->
+      <div class="form-header">
+
+        <div>
+          <h2>
+            {{ isEditMode ? 'Edit Service' : 'Add New Service' }}
+          </h2>
+
+          <p>
+            {{ isEditMode
+              ? 'Update the IT service details'
+              : 'Create a new IT service for employees'
+            }}
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeForm()">
+          ×
+        </button>
+
+      </div>
+
+
+      <!-- ACTUAL ANGULAR FORM -->
+      <form
+        #serviceForm="ngForm"
+        (ngSubmit)="saveService()">
+
+        <div class="form-grid">
+
+          <!-- SERVICE NAME -->
+          <div class="form-group">
+
+            <label>
+              Service Name *
+            </label>
+
+            <input
+              type="text"
+              name="serviceName"
+              [(ngModel)]="newService.serviceName"
+              placeholder="Enter service name"
+              required>
+
+          </div>
+
+
+          <!-- CATEGORY -->
+          <div class="form-group">
+
+            <label>
+              Category *
+            </label>
+
+            <select
+              name="category"
+              [(ngModel)]="newService.category"
+              required>
+
+              <option value="">
+                Select category
+              </option>
+
+              <option value="Hardware">
+                Hardware
+              </option>
+
+              <option value="Software">
+                Software
+              </option>
+
+              <option value="Network">
+                Network
+              </option>
+
+              <option value="Access">
+                Access
+              </option>
+
+              <option value="Email">
+                Email
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- REQUEST TYPE -->
+          <div class="form-group">
+
+            <label>
+              Request Type *
+            </label>
+
+            <select
+              name="requestType"
+              [(ngModel)]="newService.requestType"
+              required>
+
+              <option value="">
+                Select request type
+              </option>
+
+              <option value="Incident">
+                Incident
+              </option>
+
+              <option value="Service Request">
+                Service Request
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- DEFAULT PRIORITY -->
+          <div class="form-group">
+
+            <label>
+              Default Priority *
+            </label>
+
+            <select
+              name="defaultPriority"
+              [(ngModel)]="newService.defaultPriority"
+              required>
+
+              <option value="">
+                Select priority
+              </option>
+
+              <option value="Low">
+                Low
+              </option>
+
+              <option value="Medium">
+                Medium
+              </option>
+
+              <option value="High">
+                High
+              </option>
+
+              <option value="Critical">
+                Critical
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- SLA -->
+          <div class="form-group">
+
+            <label>
+              SLA *
+            </label>
+
+            <input
+              type="text"
+              name="sla"
+              [(ngModel)]="newService.sla"
+              placeholder="e.g. 1 Business Day"
+              required>
+
+          </div>
+
+
+          <!-- DESCRIPTION -->
+          <div class="form-group full-width">
+
+            <label>
+              Description *
+            </label>
+
+            <textarea
+              name="description"
+              rows="3"
+              [(ngModel)]="newService.description"
+              placeholder="Enter service description"
+              required>
+            </textarea>
+
+          </div>
+
+
+          <!-- STATUS -->
+          <div class="form-group status-group full-width">
+
+            <label>
+              Status
+            </label>
+
+            <div class="status-option">
+
+              <input
+                type="checkbox"
+                name="isActive"
+                [(ngModel)]="newService.isActive">
+
+              <span>
+                {{ newService.isActive ? 'Active' : 'Inactive' }}
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+        <div class="form-buttons">
+
+          <button
+            type="button"
+            class="cancel-btn"
+            (click)="closeForm()">
+            Cancel
+          </button>
+
+          <!-- THIS IS THE IMPORTANT PART -->
+          <button
+            type="submit"
+            class="save-btn"
+            [disabled]="saving">
+
+            {{ saving ? 'Saving...' : (isEditMode ? 'Update Service' : 'Save Service') }}
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  }
+
+
+  <!-- FILTERS -->
+  <div class="filters">
+
+    <!-- CATEGORY FILTER -->
+    <select
+      name="categoryFilter"
+      [(ngModel)]="selectedCategory"
+      (ngModelChange)="applyFilters()">
+
+      <option value="">
+        All Categories
+      </option>
+
+      <option value="Hardware">
+        Hardware
+      </option>
+
+      <option value="Software">
+        Software
+      </option>
+
+      <option value="Network">
+        Network
+      </option>
+
+      <option value="Access">
+        Access
+      </option>
+
+      <option value="Email">
+        Email
+      </option>
+
+    </select>
+
+
+    <!-- STATUS FILTER -->
+    <select
+      name="statusFilter"
+      [(ngModel)]="selectedStatus"
+      (ngModelChange)="applyFilters()">
+
+      <option value="">
+        All Status
+      </option>
+
+      <option value="Active">
+        Active
+      </option>
+
+      <option value="Inactive">
+        Inactive
+      </option>
+
+    </select>
+
+
+    <!-- CLEAR FILTER -->
+    @if (selectedCategory || selectedStatus) {
+
+      <button
+        type="button"
+        class="clear-filter-btn"
+        (click)="clearFilters()">
+
+        Clear Filters
+
+      </button>
+
+    }
+
+  </div>
+
+
+  <!-- SERVICE TABLE -->
+  <div class="table-container">
+
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>Service Name</th>
+          <th>Category</th>
+          <th>Request Type</th>
+          <th>Priority</th>
+          <th>SLA</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        <!-- NO DATA -->
+        @if (filteredServices.length === 0) {
+
+          <tr>
+
+            <td
+              colspan="7"
+              class="empty-message">
+
+              No services found.
+
+            </td>
+
+          </tr>
+
+        }
+
+
+        <!-- SERVICES -->
+        @for (service of pagedServices; track service.id) {
+
+          <tr>
+
+            <!-- SERVICE NAME -->
+            <td>
+
+              <strong>
+                {{ service.serviceName }}
+              </strong>
+
+              <small>
+                {{ service.description }}
+              </small>
+
+            </td>
+
+
+            <!-- CATEGORY -->
+            <td>
+              {{ service.category }}
+            </td>
+
+
+            <!-- REQUEST TYPE -->
+            <td>
+              {{ service.requestType }}
+            </td>
+
+
+            <!-- PRIORITY -->
+            <td>
+
+              <span
+                class="priority">
+
+                {{ service.defaultPriority }}
+
+              </span>
+
+            </td>
+
+
+            <!-- SLA -->
+            <td>
+              {{ service.sla }}
+            </td>
+
+
+            <!-- STATUS -->
+            <td>
+
+              @if (service.isActive) {
+
+                <span class="status active">
+                  Active
+                </span>
+
+              } @else {
+
+                <span class="status inactive">
+                  Inactive
+                </span>
+
+              }
+
+            </td>
+
+
+            <!-- ACTIONS -->
+            <td>
+
+              <button
+                type="button"
+                class="action-btn"
+                (click)="editService(service)">
+
+                Edit
+
+              </button>
+
+
+            </td>
+
+          </tr>
+
+        }
+
+      </tbody>
+
+    </table><div class="pagination" *ngIf="filteredServices.length"><span>Showing {{(currentPage - 1) * pageSize + 1}}–{{Math.min(currentPage * pageSize, filteredServices.length)}} of {{filteredServices.length}} services</span><div><button [disabled]="currentPage===1" (click)="goToPage(currentPage-1)">Previous</button><button *ngFor="let page of [].constructor(totalPages); let i=index" [class.selected]="currentPage===i+1" (click)="goToPage(i+1)">{{i+1}}</button><button [disabled]="currentPage===totalPages" (click)="goToPage(currentPage+1)">Next</button></div></div>
+
+  </div>
+
+</div>

@@ -1,0 +1,11 @@
+@ITServiceRequest.Api_HostAddress = http://localhost:5103
+
+GET {{ITServiceRequest.Api_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
+
+GET {{ITServiceRequest.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

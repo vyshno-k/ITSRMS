@@ -1,0 +1,296 @@
+/* Main Page */
+
+.service-request {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.service-request h1 {
+  margin-bottom: 8px;
+  color: #1f2937;
+}
+
+.service-request > p {
+  margin-top: 0;
+  color: #6b7280;
+}
+
+
+/* Create Request Form */
+
+.request-form {
+  background: #ffffff;
+  padding: 25px;
+  margin-top: 30px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.request-form h2 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #1f2937;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+
+/* Submit Button */
+
+.submit-btn {
+  padding: 11px 22px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #1d4ed8;
+}
+
+
+/* Service Requests Section */
+
+.requests-section {
+  margin-top: 40px;
+}
+
+.requests-section h2 {
+  margin-bottom: 5px;
+  color: #1f2937;
+}
+
+.section-description {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #6b7280;
+}
+
+
+/* Table Container */
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+
+/* Table */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+thead {
+  background: #f3f4f6;
+}
+
+th {
+  padding: 15px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+td {
+  padding: 16px 15px;
+  border-bottom: 1px solid #eeeeee;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #374151;
+}
+
+tbody tr:hover {
+  background: #f9fafb;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* Column Widths */
+
+th:nth-child(1),
+td:nth-child(1) {
+  width: 30%;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  width: 18%;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+  width: 22%;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+  width: 15%;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+  width: 15%;
+}
+
+
+/* Request Title */
+
+.request-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.request-title strong {
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.request-title small {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+
+/* Employee */
+
+.employee-name {
+  font-weight: 500;
+  color: #374151;
+}
+
+
+/* Service */
+
+.service-name {
+  color: #374151;
+}
+
+
+/* Priority Badge */
+
+.priority-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.priority-badge.low {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.priority-badge.medium {
+  background: #fff8e1;
+  color: #9a6700;
+}
+
+.priority-badge.high {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.priority-badge.critical {
+  background: #ffebee;
+  color: #c62828;
+}
+
+
+/* Status Badge */
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* No Requests */
+
+.no-requests {
+  padding: 30px;
+  text-align: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  color: #6b7280;
+}
+
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+  .service-request {
+    padding: 15px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 800px;
+  }
+
+}

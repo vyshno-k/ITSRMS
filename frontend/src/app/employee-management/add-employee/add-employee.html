@@ -1,0 +1,22 @@
+<div class="page employee-page" style="background: linear-gradient(180deg, #edf3f2 0%, #f5faf8 46%, #eaf1ef 100%);">
+  <main class="content">
+    <div class="form-header"><div><h1>{{ editingId ? 'Edit Employee' : 'Add Employee' }}</h1><p>{{ editingId ? 'Update employee details and account status.' : 'Add a new employee.' }}</p></div><button class="back" (click)="goBack()">← Back to Employees</button></div>
+    <section class="form-card">
+      <form #employeeForm="ngForm" novalidate (ngSubmit)="saveEmployee()">
+        <div class="form-grid">
+          <div><label>First Name <small></small></label><input name="firstName" [(ngModel)]="employee.firstName" maxlength="50" required placeholder="Enter first name" /></div>
+          <div><label>Last Name <small></small></label><input name="lastName" [(ngModel)]="employee.lastName" maxlength="50" required placeholder="Enter last name" /></div>
+          <div><label>Email <small></small></label><input name="email" type="email" [(ngModel)]="employee.email" maxlength="100" required placeholder="employee@example.com" /></div>
+          <div><label>Phone <small></small></label><input name="phone" type="tel" [(ngModel)]="employee.phone" maxlength="15" required placeholder="10 digit phone number" /></div>
+          <div><label>Department <small></small></label><input name="department" [(ngModel)]="employee.department" maxlength="50" required placeholder="IT" /></div>
+          <div><label>Designation <small></small></label><input name="designation" [(ngModel)]="employee.designation" maxlength="80" required placeholder="Software Engineer" /></div>
+          <div><label>Date of Joining</label><input name="dateOfJoining" type="date" [(ngModel)]="employee.dateOfJoining" required /></div>
+        </div>
+        <label class="active-row"><input type="checkbox" name="isActive" [(ngModel)]="employee.isActive" /> <span>Employee is Active</span></label>
+        <div *ngIf="errorMessage" class="error">{{errorMessage}}</div>
+        <div class="actions"><button type="button" class="cancel" (click)="goBack()">Cancel</button><button type="submit" class="save" [disabled]="saving" [class.is-saving]="saving" [attr.aria-busy]="saving"><span>{{ editingId ? 'Update Employee' : 'Save Employee' }}</span></button></div>
+      </form>
+    </section>
+  </main>
+  <div *ngIf="toastMessage" class="toast" role="status" aria-live="polite" style="background:#dff7c8;color:#1f5e2c;border:1px solid #a9df7b"><span class="toast-icon" aria-hidden="true">✓</span><span>{{toastMessage}}</span></div>
+</div>

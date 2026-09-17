@@ -1,0 +1,102 @@
+:host {
+  display: block;
+}
+
+.panel {
+  background: linear-gradient(145deg, #ffffff 0%, #eef4ff 58%, #f0edff 100%);
+}
+
+.detail-card:first-child {
+  border-top: 4px solid #2d8cff;
+}
+
+.detail-card:nth-child(2) {
+  border-top: 4px solid #24b47e;
+}
+
+.description-box {
+  background: #fffdf5;
+  border-color: #f4e6b7;
+}
+
+.description-box p {
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.mini-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mini-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  color: #29486d;
+  font-weight: 600;
+}
+
+.mini-form input,
+.mini-form textarea {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 1px solid #b9cce5;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 11px 12px;
+  color: #1c2d43;
+  font: inherit;
+}
+
+.mini-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.mini-form input:focus,
+.mini-form textarea:focus {
+  border-color: #2d8cff;
+  box-shadow: 0 0 0 4px rgba(45, 140, 255, 0.14);
+  outline: none;
+}
+
+.mini-form button {
+  align-self: flex-start;
+  min-width: 142px;
+}
+
+.history-box {
+  background: #f7fbff;
+}
+
+.history-box li:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .mini-form button {
+    align-self: stretch;
+    width: 100%;
+  }
+
+  .history-box li {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+.sla-box { margin-top: 20px; padding: 20px; border-radius: 16px; border: 1px solid #e2eaf6; background: #f7fbff; }
+.sla-box h3 { margin: 0; color: #17335f; }
+.sla-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+.sla-grid > div { padding: 14px; background: #fff; border-radius: 12px; border: 1px solid #e7edf8; display: flex; flex-direction: column; gap: 5px; }
+.sla-grid span, .sla-grid small { color: #68809f; }
+.sla-grid strong { color: #13795b; }
+.sla-grid strong.breached { color: #b42318; }
+.sla-paused { color: #8a5b00; font-weight: 700; }
+@media (max-width: 700px) { .sla-grid { grid-template-columns: 1fr; } }

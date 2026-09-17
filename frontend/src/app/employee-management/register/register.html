@@ -1,0 +1,21 @@
+<div class="auth-page">
+  <div class="auth-card register-card">
+    <div class="brand-mark">IT</div>
+    <h1>Create Account</h1>
+    <p class="subtitle">Create your IT Service Management account</p>
+    <form (ngSubmit)="register()">
+      <div class="grid">
+        <div><label>Username</label><input name="username" [(ngModel)]="username" placeholder="Choose username" /></div>
+        <div><label>Full Name</label><input name="fullName" [(ngModel)]="fullName" placeholder="Your full name" /></div>
+        <div><label>Email</label><input name="email" type="email" [(ngModel)]="email" placeholder="you@example.com" /></div>
+        <div><label>Department</label><input name="department" [(ngModel)]="department" placeholder="IT / HR / Finance" /></div>
+        <div><label>Password</label><input name="password" type="password" [(ngModel)]="password" placeholder="Minimum 6 characters" /></div>
+        <div><label>Role</label><input name="role" [(ngModel)]="role" readonly aria-readonly="true" /></div>
+      </div>
+      <button class="primary" type="submit" [disabled]="loading"><span class="spinner" *ngIf="loading"></span>{{loading?'Creating Account...':'Create Account'}}</button>
+      <div class="message success" *ngIf="success">✓ {{success}}</div>
+      <div class="message error" *ngIf="error">{{error}}</div>
+      <p class="switch">Already have an account? <button type="button" class="link-button" (click)="goToLogin()">Login</button></p>
+    </form>
+  </div>
+</div>

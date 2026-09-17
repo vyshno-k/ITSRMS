@@ -1,0 +1,77 @@
+<div class="module-page">
+  <header class="module-header">
+    <div>
+      <h1>Resolution &amp; Closure</h1>
+      <p>Review investigation and resolution notes, close confirmed resolutions, and reopen eligible resolved tickets.</p>
+    </div>
+    <a routerLink="/assignment" class="employee-gateway">
+      <span class="gateway-icon">◎</span>
+      <span><strong>Assignments</strong><small>Open ticket assignments</small></span>
+      <span class="gateway-arrow">→</span>
+    </a>
+  </header>
+
+  <p *ngIf="errorMessage" class="message error-text">{{ errorMessage }}</p>
+  <p *ngIf="successMessage" class="message success-text">{{ successMessage }}</p>
+
+  <section id="closure-form" class="card closure-form" *ngIf="selectedTicket">
+    <div class="closure-heading"><div><p class="eyebrow">Closure Information</p><h2>{{ selectedTicket.ticketNumber }} - {{ selectedTicket.subject }}</h2></div><span class="status-badge">{{ selectedTicket.status }}</span></div>
+    <div class="ticket-description"><strong>Request description</strong><p>{{ selectedTicket.description || 'No description provided.' }}</p></div>
+    <div class="closure-fields">
+      <label>Resolution description <span>*</span><textarea [(ngModel)]="closureDescription" rows="4" placeholder="Describe how the issue was resolved."></textarea></label>
+      <label>Resolution category<select [(ngModel)]="closureCategory"><option>Hardware Issue</option><option>Software Issue</option><option>Network Issue</option><option>Access/Permission Issue</option><option>Configuration Issue</option><option>User Error</option><option>Other</option></select></label>
+      <label>Resolution notes<textarea [(ngModel)]="closureNotes" rows="4" placeholder="Add optional closure notes."></textarea></label>
+    </div>
+    <div class="closure-actions"><button type="button" class="secondary-button" (click)="selectedTicket=null">Clear</button><button type="button" class="primary-button" [disabled]="savingId !== null" (click)="closeTicket(selectedTicket)">{{ selectedTicket.status === 'Closed' ? 'Ticket Closed' : savingId === selectedTicket.id ? 'Closing...' : selectedTicket.status === 'Resolved' ? 'Close Ticket' : 'Check Status' }}</button></div>
+  </section>
+
+  <section class="card assigned-ticket-box">
+    <div class="section-heading"><div><h2>Assigned Tickets</h2><p>Select one or more tickets to record the same resolution.</p></div></div>
+    <div class="assigned-ticket-list" *ngIf="assignedTickets.length; else noAssignedTickets">
+      <label class="assigned-ticket" *ngFor="let ticket of assignedTickets"><input type="checkbox" [checked]="selectedAssignedTicketIds.includes(ticket.id)" (change)="toggleAssignedTicket(ticket.id, $any($event.target).checked); selectTicket(ticket)" /><span><strong>{{ ticket.ticketNumber }}</strong><small>{{ ticket.subject }} | {{ ticket.engineerName || 'Not assigned' }} | {{ ticket.status }}</small></span></label>
+    </div>
+    <ng-template #noAssignedTickets><p class="empty-assigned">No assigned tickets are waiting for resolution.</p></ng-template>
+  </section>
+
+  <section class="card">
+    <div class="filter-buttons">
+      <button type="button" [class.active]="filter === 'all'" (click)="filter='all'">All</button>
+      <button type="button" [class.active]="filter === 'New'" (click)="filter='New'">New</button>
+      <button type="button" [class.active]="filter === 'Assigned'" (click)="filter='Assigned'">Assigned</button>
+      <button type="button" [class.active]="filter === 'Resolved'" (click)="filter='Resolved'">Resolved</button>
+      <!--button type="button" [class.active]="filter === 'Reopened'" (click)="filter='Reopened'">Reopened</button!-->
+      <button type="button" [class.active]="filter === 'Closed'" (click)="filter='Closed'">Closed</button>
+    </div>
+
+    <p *ngIf="loading">Loading resolution workflow...</p>
+    <p *ngIf="!loading && !visibleTickets.length">No tickets match this resolution/closure view.</p>
+
+    <div class="table-wrap" *ngIf="!loading && visibleTickets.length">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticket</th><th>Status</th><th>Subject</th><th>Description</th><th>Engineer</th><th>Investigation</th><th>Resolution</th><th>SLA</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ticket of pagedTickets">
+            <td><a [routerLink]="['/service-requests', ticket.id]"><strong>{{ ticket.ticketNumber }}</strong></a></td>
+            <td><span class="status-badge">{{ ticket.status }}</span></td>
+            <td>{{ ticket.subject }}</td>
+            <td><div class="description-box">{{ ticket.description || 'No description provided.' }}</div></td>
+            <td>{{ ticket.engineerName || 'Not assigned' }}</td>
+            <td>{{ ticket.latestResolution?.investigationNotes || 'Not yet recorded' }}</td>
+            <td><span *ngIf="ticket.status === 'Resolved' || ticket.status === 'Closed'; else resolutionNotes" class="resolved-label">Resolved</span><ng-template #resolutionNotes>{{ ticket.latestResolution?.resolutionNotes || 'Not yet recorded' }}</ng-template></td>
+            <td>{{ ticket.latestResolution?.slaResult || ticket.resolutionSlaStatus || 'On Track' }}</td>
+            <td class="actions-cell">
+              <button type="button" class="secondary-button" (click)="selectTicket(ticket)">Review</button>
+              <a [routerLink]="['/service-requests', ticket.id]" class="secondary-button">Open</a>
+              <button *ngIf="ticket.status === 'Resolved'" type="button" class="primary-button" [disabled]="savingId === ticket.id" (click)="closeTicket(ticket)">Close</button>
+              <button *ngIf="ticket.status === 'Resolved'" type="button" class="secondary-button" [disabled]="savingId === ticket.id" (click)="reopenTicket(ticket)">Reopen</button>
+            </td>
+          </tr>
+        </tbody>
+      </table><div class="pagination"><span>Showing {{(currentPage - 1) * pageSize + 1}}–{{Math.min(currentPage * pageSize, visibleTickets.length)}} of {{visibleTickets.length}} tickets</span><div><button [disabled]="currentPage===1" (click)="goToPage(currentPage-1)">Previous</button><button *ngFor="let page of [].constructor(totalPages); let i=index" [class.selected]="currentPage===i+1" (click)="goToPage(i+1)">{{i+1}}</button><button [disabled]="currentPage===totalPages" (click)="goToPage(currentPage+1)">Next</button></div></div>
+    </div>
+  </section>
+</div>
