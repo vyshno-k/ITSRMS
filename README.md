@@ -9,7 +9,9 @@ This is the merged single web application. The existing UI is retained, with the
 - `database/` - SQLite database files
 
 **## Architecture**
-
+<p align="center">
+  <img src="./images/system-architecture.png" alt="System Architecture" width="1200">
+</p>
   
 
 ## Functional flow
