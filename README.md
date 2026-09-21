@@ -46,6 +46,11 @@ Create Request -> New -> Assign Active Engineer -> Assigned -> In Progress -> Re
 - Engineer workload
 - Basic filtering
 
+  <p align="center">
+  <img src="dashboard-output.png" alt="System Architecture" width="1200">
+</p>
+
+
 ## Run backend
 
 From `backend`:
