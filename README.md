@@ -63,4 +63,3 @@ Use a supported Node.js version for the Angular CLI version specified in `fronte
 - `/assignment`
 - `/resolution-closure`
 
-The API uses SQLite under `database/` and seeds the application data on startup.
