@@ -10,7 +10,7 @@ This is the merged single web application. The existing UI is retained, with the
 
 **## Architecture**
 <p align="center">
-  <img src="./images/system-architecture.png" alt="System Architecture" width="1200">
+  <img src="system-architecture.png" alt="System Architecture" width="1200">
 </p>
   
 
