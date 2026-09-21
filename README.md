@@ -33,6 +33,8 @@ Create Request -> New -> Assign Active Engineer -> Assigned -> In Progress -> Re
 
 Alternative: Resolved -> Reopen -> Reopened -> In Progress
 
+**Features Implemented**
+
 <p align="center">
   <img src="features.png" alt="System Architecture" width="1200">
 </p>
