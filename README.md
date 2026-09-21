@@ -31,7 +31,6 @@ for display
 
 Create Request -> New -> Assign Active Engineer -> Assigned -> In Progress -> Resolve -> Resolved -> Confirm & Close -> Closed
 
-Alternative: Resolved -> Reopen -> Reopened -> In Progress
 
 **Features Implemented**
 
