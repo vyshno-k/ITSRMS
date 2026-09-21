@@ -24,7 +24,7 @@ Alternative: Resolved -> Reopen -> Reopened -> In Progress
 - SLA-breached tickets
 - Tickets by priority and category
 - Engineer workload
-- Basic From/To date filtering
+- Basic filtering
 
 ## Run backend
 
