@@ -1,6 +1,14 @@
 # IT Service Request Management System 
 
-This is the merged single web application. The existing UI is retained, with the Service Catalog and Assignment Management pages replaced by the corresponding IT-Service-Management-Final-aish page designs. Dashboard & Reports is added.
+A web-based application for employees to raise IT support requests 
+and for support engineers to categorize, assign, track, resolve and 
+close those requests.
+The system will include SLA tracking, request 
+history, workload visibility, and dashboards.
+A PySpark job in Databricks triggered manually to process
+the underlying employee, catalog data stored
+in delta tables , and returns the results back to the frontend
+for display
 
 ## Structure
 
