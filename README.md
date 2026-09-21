@@ -12,6 +12,11 @@ This is the merged single web application. The existing UI is retained, with the
 <p align="center">
   <img src="system-architecture.png" alt="System Architecture" width="1200">
 </p>
+
+
+<p align="center">
+  <img src="databricks-design.png" alt="System Architecture" width="1200">
+</p>
   
 
 ## Functional flow
