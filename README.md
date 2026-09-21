@@ -1,4 +1,4 @@
-# IT Service Request Management System - Final Merged Application
+# IT Service Request Management System 
 
 This is the merged single web application. The existing UI is retained, with the Service Catalog and Assignment Management pages replaced by the corresponding IT-Service-Management-Final-aish page designs. Dashboard & Reports is added.
 
@@ -7,6 +7,10 @@ This is the merged single web application. The existing UI is retained, with the
 - `frontend/` - Angular application
 - `backend/` - ASP.NET Core API
 - `database/` - SQLite database files
+
+**## Architecture**
+
+  
 
 ## Functional flow
 
